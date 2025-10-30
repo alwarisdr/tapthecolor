@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tapthecolor/medels/leader_board.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:tapthecolor/managers/storage_manager.dart';
 
 class LeaderboardScreen extends StatelessWidget {
-  LeaderboardScreen({super.key});
-  
-  final List<LeaderboardEntry> leaderboard = [
-    LeaderboardEntry('Player1', 850),
-    LeaderboardEntry('Player2', 720),
-    LeaderboardEntry('Player3', 680),
-    LeaderboardEntry('You', 540),
-    LeaderboardEntry('Player5', 420),
-  ];
-
-
+  const LeaderboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,60 +21,55 @@ class LeaderboardScreen extends StatelessWidget {
             colors: [Colors.purple.shade400, Colors.blue.shade400],
           ),
         ),
-        child: ListView.builder(
-          padding: EdgeInsets.all(20),
-          itemCount: leaderboard.length,
-          itemBuilder: (context, index) {
-            final entry = leaderboard[index];
-            final isCurrentUser = entry.name == 'You';
-            return Container(
-              margin: EdgeInsets.only(bottom: 15),
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: isCurrentUser 
-                    ? Colors.yellow.shade100 
-                    : Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
+        child: FutureBuilder(
+          future: StorageManager.getHighScore(), 
+          builder: (context, snapshot){
+            final hightscore = snapshot.data ?? 0;
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '#${index + 1}',
+                    '🏆',
+                    style: TextStyle(fontSize: 80),
+                  ).animate().scale(duration: 800.ms),
+                  SizedBox(height: 20),
+                  Text(
+                    'คะแนนสูงสุดของคุณ',
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple.shade700,
+                      color: Colors.white,
                     ),
                   ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: Text(
-                      entry.name,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  ),
+                  SizedBox(height: 10),
                   Text(
-                    '${entry.score}',
+                    '$hightscore',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 72,
                       fontWeight: FontWeight.bold,
-                      color: Colors.purple.shade700,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 20.0,
+                          color: Colors.black26,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
+                    ),
+                  ).animate().fadeIn(delay: 300.ms),
+                  SizedBox(height: 40),
+                  Text(
+                    'Online Leaderboard\nมาในเวอร์ชันถัดไป!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
               ),
             );
-          },
+          }
         ),
       ),
     );
